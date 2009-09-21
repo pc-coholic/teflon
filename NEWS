@@ -1,0 +1,12 @@
+Version 0.0.3:
+- Fixed autossh/ssh selection bug (thanks to Christopher Eltschka)
+- Add the -N option to ssh startup to prevent terminal session
+  from starting (thanks to Christopher Eltschka)
+- Added NEWS file
+
+Version 0.0.2:
+- Additional documentation of features
+- Fixed bug in handling of broken connections
+
+Version 0.0.1:
+- Initial release

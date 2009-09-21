@@ -1,0 +1,118 @@
+Useful description follows this license.
+
+The MIT License
+
+Copyright (c) 2009 Nathan Gallaher <ngallaher @ deepthought.org>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Description:
+------------
+
+Teflon is an auto-start proxy service designed to startup your ssh
+proxy on demand. It is designed to be used in conjunction with a web browser
+proxy, eg: foxy-proxy, though it can be used as the canonical proxy target
+for any application.
+
+Teflon is a simple script that will ensure your ssh proxy is up when your
+browser needs to request something.  Teflon is different from autossh in that
+autossh will continually attempt to establish a connection, even if
+that connection is not needed.  Teflon only checks the health of your proxy
+connection when you request something over it. Teflon can be configured to
+leverage autossh's connection monitoring facilities to produce a very
+transparent tunneled proxy.
+
+Teflon's target audience is people who are highly mobile who need to access
+content that is only available within specific networks. For example, your
+office or university might have websites that are only viewable if you are
+on a computer within that network.  Using teflon with foxyproxy, you can
+seamlessly view pages on such networks, without having to constantly
+re-establish your proxy tunnels each time.
+
+Installation:
+-------------
+
+Unpack teflon somewhere. There are 2 files included: the teflon script, and
+its config file.
+
+Install the python configobj module. This can be found in most major
+repositories for linux. For OSX, try fink.
+
+Install autossh. This is recommended but not strictly necessary. If you
+do not wish to use autossh you will have to add 'proxy_application=ssh'
+to each entry in your config.
+
+If you haven't already, push your ssh keys to the target linux server.
+Currently teflon only works if you can use public key authentication. Teflon
+does not support password authentication (patches are being accepted)
+
+Running:
+--------
+
+1) edit teflon.conf and setup your login info. Choose a local_socks_port that
+is in the 2000-60000 range that is unused. Almost all ports in that range are
+likely to be unused.
+
+2) run ./teflon.py &
+
+3) Setup your webrowser to use a SOCKS proxy on the local_socks_port
+   on the host 127.0.0.1 (localhost)
+   You may have to twiddle network.proxy.sock_remote_dns on the
+   about:config page to get dns lookups doing the right thing.
+   It is recommended that you install FoxyProxy or a similar plugin
+   to only send the restricted traffic over the proxy interface.
+   Teflon is not particularly slow, but it would be needless to
+   tunnel all of your traffic if you don't need to.
+
+4) Browse to a previously restricted page. In the terminal where you
+   started teflon, you should see a "Starting proxy via host <host>"
+   message. If you see nothing, check your proxy settings. If you see
+   an error, check your config file, and check that you can login
+   to the remote_host without having to enter a password
+
+Geeky explanation:
+------------------
+
+Teflon listens on localhost:local_socks_port for connections from clients.
+Upon receiving a connection, a quick check is done to see if an ssh proxy
+is listening for traffic on local_socks_port+1 (you can change this). If it
+is, the proxy is assumed to be up, and teflon merely shuttles data between the
+ports. If the port is closed, then teflon attempts to start the ssh proxy
+(by default autossh -D). Using autossh allows for connections to fail
+fast, solving a particular problem when laptops are put to sleep in the
+middle of a connection.  Autossh needs ports local_socks_port+2 and +3, so if
+you have multiple targets for teflon to handle, make sure you space
+local_socks_port directives by at least 4 portnumbers.
+
+Caveats:
+--------
+Proxy tunneling like this can be a security hazard. If you share your local
+machine with others, it is not recommended that you leave teflon running. If
+you can share your machine with remote users, it is not recommended that you
+use teflon. This is because the local ssh proxy tunnel you are starting can
+be accessed by anyone on your local machine.
+
+Contributing:
+-------------
+Teflon was written on a whim to solve a particular problem.  Not much attention
+was paid to portability, non-*nix platforms, or code cleanliness/usability.
+If you have questions, concerns, are not sure if teflon can do X, or would like
+to submit patches, feel free to email me at <ngallaher @ deepthought.org>
+
+
