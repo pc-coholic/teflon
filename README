@@ -52,7 +52,10 @@ Unpack teflon somewhere. There are 2 files included: the teflon script, and
 its config file.
 
 Install the python configobj module. This can be found in most major
-repositories for linux. For OSX, try fink.
+repositories for linux. For OSX, try fink. For windows or distros that do not
+have a configobj package, you can download it from
+http://www.voidspace.org.uk/python/configobj.html and use the setup.py
+installer.
 
 Install autossh. This is recommended but not strictly necessary. If you
 do not wish to use autossh you will have to add 'proxy_application=ssh'
